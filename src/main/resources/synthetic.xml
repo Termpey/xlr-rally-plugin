@@ -4,16 +4,18 @@
            
     <type type="rally.Server" extends="xlrelease.Configuration">
 
-        <proeprty name="scriptLocation" default="rally/TestConnection.py" hidden="true"/>
+        <property name="scriptLocation" default="rally/TestConnection.py" hidden="true"/>
 
         <property name="title" label="Title" default="Rally"/>
 
-        <property name="userName" label="User Name" kind="string"/>
+        <property name="userName" label="User Name" kind="string" required="true"/>
 
         <property name="password" label="Password" required="true" kind="string" password="true" description="Password or Token"/>
 
         <property name="baseUrl" label="Server" required="true" kind="string" description="Server/Url of Rally" 
             default="https://rally1.rallydev.com/slm/webservice/v2.0/"/>
+
+        <property name="apiKey" label="API Key" required="true" kind="string" password="true"/>
 
     </type>
 
@@ -29,6 +31,8 @@
 
     <type type="rally.CreateFeature" extends="rally.Task">
 
+        <property name="scriptLocation" default="rally/CreateFeature.py" hidden="true"/>
+
         <property name="scriptLocation" hidden="true" default="xlr/CreateFeature.java"/>
 
         <property name="epicID" category="input" kind="string" required="true" label="Epic ID"/>
@@ -43,7 +47,7 @@
         <property name="endDate" category="input" kind="string" required="true" label="Planned End Date" 
             description="Format: YYYY-MM-DD"/>
 
-        <property name="state" category="input" kind="enum" required="true">
+        <property name="state" category="input" kind="enum" required="false">
             <enum-values>
 
                 <value>-- No Entry --</value>
@@ -54,6 +58,8 @@
                 <value>On Hold</value>
 
             </enum-values>
+
+        </property>
 
         <property name="desc" category="input" kind="string" required="false" label="Description"/>
 
@@ -67,6 +73,8 @@
     </task>
 
     <type type="rally.CreateUserStory" extends="rally.task">
+
+        <property name="scriptLocation" default="rally/CreateUserStory.py" hidden="true"/>
 
         <property name="scriptLocation" hidden="true" default="xlr/CreateUserStory.java"/>
 
@@ -82,6 +90,20 @@
         <property name="endDate" category="input" kind="string" required="true" label="Planned End Date" 
             description="Format: YYYY-MM-DD"/>
 
+            <property name="state" category="input" kind="enum" required="true">
+            <enum-values>
+
+                <value>-- No Entry --</value>
+                <value>Inception</value>
+                <value>Construction</value>
+                <value>Transition</value>
+                <value>Done</value>
+                <value>On Hold</value>
+
+            </enum-values>
+
+        </property>
+
         <property name="desc" category="input" kind="string" required="false" label="Description"/>
 
         <property name="notes" category="input" kind="string" required="false" label="Notes"/>
@@ -94,6 +116,8 @@
     </type>
 
     <type type="rally.UpdateObject" extends="rally.task">
+
+        <property name="scriptLocation" default="rally/UpdateObject.py" hidden="true"/>
 
         <property name="formattedID" category="input" kind="string" required="true" label="Formatted ID"
             description="Give the Formatted ID of the User story or Feature to be updated. Include the prefix letters."/>

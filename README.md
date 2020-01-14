@@ -11,17 +11,11 @@
 
 ## Features/Usage/Types/Tasks
 
-### Get Team List
+### Create Feature
 
-### Create Business Object
+### Create User Story
 
-#### Example JSON for 'Create Business Object - Business Object Json Field'
-
-### Get Business Object
-
-### Update Business Object
-
-### Poll Business Object for field value change
+### Update Object
 
 ## References
 

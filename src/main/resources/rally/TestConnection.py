@@ -14,13 +14,11 @@ from base64 import b64encode
 logger = logging.getLogger(__name__)
 logger.debug("In TestConnection")
 
-#userAndPass = b64encode((configuration.userName + ":" + configuration.password)).decode("ascii")
+userAndPass = b64encode(b"%s:%s")%(configuration.userName, configuration.password)
 
-userAndPass = b64encode(b"itreleasemanagement@schneider.com:Amanda@2020")
-
-conn = http.client.HTTPSConnection("https://rally1.rallydev.com/slm/webservice/v2.0/security/authorize","443",context=ssl._create_unverified_context())
+conn = http.client.HTTPSConnection("https://rally1.rallydev.com","443",context=ssl._create_unverified_context())
 headers = {'Authorization' : 'Basic %s' % userAndPass}
 
-conn.request('GET', '/', headers=headers)
+conn.request('GET', '/slm/webservice/v2.0/security/authorize', headers=headers)
 
 res = conn.getresponse()
