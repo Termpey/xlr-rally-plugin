@@ -1,0 +1,136 @@
+<synthetic xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+           xmlns="http://www.xebialabs.com/deployit/synthetic"
+           xsi:schemaLocation="http://www.xebialabs.com/deployit/synthetic synthetic.xsd">
+           
+    <type type="rally.Server" extends="xlrelease.Configuration">
+
+        <proeprty name="scriptLocation" default="rally/TestConnection.py" hidden="true"/>
+
+        <property name="title" label="Title" default="Rally"/>
+
+        <property name="userName" label="User Name" kind="string"/>
+
+        <property name="password" label="Password" required="true" kind="string" password="true" description="Password or Token"/>
+
+        <property name="baseUrl" label="Server" required="true" kind="string" description="Server/Url of Rally" 
+            default="https://rally1.rallydev.com/slm/webservice/v2.0/"/>
+
+    </type>
+
+    <type type="rally.Task" extends="xlrelease.PythonScript" virtual="true">
+
+        <!--
+            Base Rally Task, Object Oriented Programming Polymorphism inside XML :) iykyk
+        -->
+
+        <property name="server" category="input" referenced-type="rally.Server" kind="ci"/>
+
+    </type>
+
+    <type type="rally.CreateFeature" extends="rally.Task">
+
+        <property name="scriptLocation" hidden="true" default="xlr/CreateFeature.java"/>
+
+        <property name="epicID" category="input" kind="string" required="true" label="Epic ID"/>
+
+        <property name="title" category="input" kind="string" required="true" label="Title of Feature"/>
+
+        <property name="owner" category="input" kind="string" required="true" label="Owner Format: First Last"/>
+
+        <property name="startDate" category="input" kind="string" required="true" label="Planned Start Date" 
+            description="Format: YYYY-MM-DD"/>
+
+        <property name="endDate" category="input" kind="string" required="true" label="Planned End Date" 
+            description="Format: YYYY-MM-DD"/>
+
+        <property name="state" category="input" kind="enum" required="true">
+            <enum-values>
+
+                <value>-- No Entry --</value>
+                <value>Inception</value>
+                <value>Construction</value>
+                <value>Transition</value>
+                <value>Done</value>
+                <value>On Hold</value>
+
+            </enum-values>
+
+        <property name="desc" category="input" kind="string" required="false" label="Description"/>
+
+        <property name="notes" category="input" kind="string" required="false" label="Notes"/>
+
+        <property name="accCriteria" category="input" kind="string" required="false" label="Acceptance Criteria"/>
+
+        <property name="createdID" category="output" kind="string" label="Feature ID" 
+            description="ID number of the newly created feature"/>
+
+    </task>
+
+    <type type="rally.CreateUserStory" extends="rally.task">
+
+        <property name="scriptLocation" hidden="true" default="xlr/CreateUserStory.java"/>
+
+        <property name="featureID" category="input" required="true" label="Feature ID"/>
+
+        <property name="title" category="input" kind="string" required="true" label="Title of User Story"/>
+
+        <property name="owner" category="input" kind="string" required="true" label="Owner Format: First Last"/>
+
+        <property name="startDate" category="input" kind="string" required="true" label="Planned Start Date" 
+            description="Format: YYYY-MM-DD"/>
+
+        <property name="endDate" category="input" kind="string" required="true" label="Planned End Date" 
+            description="Format: YYYY-MM-DD"/>
+
+        <property name="desc" category="input" kind="string" required="false" label="Description"/>
+
+        <property name="notes" category="input" kind="string" required="false" label="Notes"/>
+
+        <property name="accCriteria" category="input" kind="string" required="false" label="Acceptance Criteria"/>
+
+        <property name="createdID" category="output" kind="string" label="User Story ID" 
+            description="ID number of the newly created User Story"/>
+
+    </type>
+
+    <type type="rally.UpdateObject" extends="rally.task">
+
+        <property name="formattedID" category="input" kind="string" required="true" label="Formatted ID"
+            description="Give the Formatted ID of the User story or Feature to be updated. Include the prefix letters."/>
+
+        <property name="state" category="input" kind="string" required="false" label="State"
+            description="Input: On Hold, Done, Transition, Construction, or Inception"/>
+
+        <property name="notes" category="input" kind="string" required="false" label="Notes"
+            description="Adds given notes to the end of the existing notes"/>
+
+        <property name="description" category="input" kind="string" required="false" label="Description"
+            description="Adds given description to the end of the existing description"/>
+
+        <property name="accCrit" category="input" kind="string" required="false" label="Acceptance Criteria"
+            description="Adds given acceptance criteria to the end of the existing acceptance criteria"/>
+
+        <property name="description" category="input" kind="string" required="false" label="Description"
+            description="Adds given description to the end of the existing description"/>
+
+        <property name="iteration" category="input" kind="string" required="false" label="Iteration"
+            description="Adds iteration by given title"/>
+
+        <property name="milestone" category="input" kind="string" required="false" label="Milestone"
+            description="Adds milestone by given title"/>
+
+        <property name="team" category="input" kind="string" required="false" label="Team/Project"
+            description="Updates to the given team by title"/>
+
+        <property name="owner" category="input" kind="string" required="false" label="Owner"
+            description="Updates to the given owner by name. Format: First Last"/>
+
+        <property name="startDate" category="input" kind="string" required="false" label="Start Date"
+            description="Updates to the given start date. Format: YYYY-MM-DD"/>
+
+        <property name="endDate" category="input" kind="string" required="false" label="End Date"
+            description="Updates to the given end date. Format: YYYY-MM-DD"/>
+
+    <type/>
+
+</synthetic>
