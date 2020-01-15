@@ -7,7 +7,7 @@
 #
 # THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #
-import logging, ssl, http.client, urllib, json
+import logging, ssl, httplib, urllib, json
 from base64 import b64encode
 
 
@@ -16,10 +16,10 @@ logger.debug("In TestConnection")
 
 userAndPass = b64encode(b"%s:%s")%(configuration.userName, configuration.password)
 
-conn = http.client.HTTPSConnection("https://rally1.rallydev.com","443",context=ssl._create_unverified_context())
+conn = httplib.HTTPSConnection(configuration.url,"443",context=ssl._create_unverified_context())
 headers = {'Authorization' : 'Basic %s' % userAndPass}
 
-conn.request('GET', '/slm/webservice/v2.0/security/authorize', headers=headers)
+conn.request('GET', '/slm/webservice/v2.0/security/authorize', "", headers)
 
 res = conn.getresponse()
 
