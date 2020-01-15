@@ -8,8 +8,51 @@
 # THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #
 
-import logging
+import logging, ssl, http.client, urllib, json
+from base64 import b64encode
 
+baseURL = '/slm/webservice/v2.0/'
 
 logger = logging.getLogger(__name__)
+logger.debug("In TestConnection")
 
+userAndPass = b64encode(b"%s:%s")%(configuration.userName, configuration.password)
+
+conn = http.client.HTTPSConnection(configuration.url,"443",context=ssl._create_unverified_context())
+headers = {'Authorization' : 'Basic %s' % userAndPass}
+
+curURL = baseURL + 'portfolioitem/feature?fetch=FormattedID&query=(FormattedID%20%3D%20%s)'%featureID
+
+conn.request('GET', curURL, headers=headers)
+
+fQResp = conn.getresponse()
+
+fQJson = json.loads(fQResp.read())
+
+print(fQJson)
+
+fRef = fQJson.get('QueryResult').get('Results')[0].get('_ref')
+
+curURL = baseURL + 'security/authorize'
+
+conn.request('GET', curURL, headers=headers)
+
+secResp = conn.getresponse()
+
+secJson = json.loads(secResp.read())
+
+TOK = secResp.get('OperationResult').get('SecurityToken')
+
+headers = {'Authorization' : 'Basic %s', 'ZSESSIONID' : '%s' %(userAndPass, configuration.apiKey)}
+
+data = """{"HierarchicalRequirement":{"Name": "%s", "PortfolioItem": "/portfolioitem/feature/%s"}}"""%(name,fRef)
+
+info = json.loads(data)
+
+curURL = 'hierarchicalrequirement/create?key=%s'%TOK
+
+conn.request('PUT', curURL, json.dumps(info, indent=4), headers=headers)
+
+usCResp = conn.getresponse()
+
+print(usCResp.read())

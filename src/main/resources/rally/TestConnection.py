@@ -22,3 +22,5 @@ headers = {'Authorization' : 'Basic %s' % userAndPass}
 conn.request('GET', '/slm/webservice/v2.0/security/authorize', headers=headers)
 
 res = conn.getresponse()
+
+print(res.read())

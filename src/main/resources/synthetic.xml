@@ -76,8 +76,6 @@
 
         <property name="scriptLocation" default="rally/CreateUserStory.py" hidden="true"/>
 
-        <property name="scriptLocation" hidden="true" default="xlr/CreateUserStory.java"/>
-
         <property name="featureID" category="input" required="true" label="Feature ID"/>
 
         <property name="title" category="input" kind="string" required="true" label="Title of User Story"/>

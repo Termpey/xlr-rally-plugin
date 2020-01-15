@@ -11,11 +11,6 @@
 import logging, ssl, http.client, urllib, json
 from base64 import b64encode
 
-def createJson():
-    jsonBody = """{"Feature":{"Name":"%s","PortfolioItem":"%s"}}"""%(name,epicRef)
-
-    return jsonBody
-
 baseURL = '/slm/webservice/v2.0/'
 
 logger = logging.getLogger(__name__)
@@ -48,7 +43,7 @@ TOK = secResp.get('OperationResult').get('SecurityToken')
 
 headers = {'Authorization' : 'Basic %s', 'ZSESSIONID' : '%s' %(userAndPass, configuration.apiKey)}
 
-data = createJson()
+data = """{"Feature":{"Name":"%s","PortfolioItem":"%s"}}"""%(name,epicRef)
 
 info = json.loads(data)
 
@@ -57,3 +52,5 @@ curUrl = baseURL + 'feature/create?key=' + TOK
 conn.request('PUT', curURL, json.dumps(info, indent=4), headers=headers)
 
 fresp = conn.getresponse()
+
+print(fresp.read())
