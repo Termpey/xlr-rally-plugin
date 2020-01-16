@@ -8,59 +8,63 @@
 # THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #
 
-import logging, ssl, httplib, urllib, json
-from base64 import b64encode
+import ssl, httplib, urllib, json
 
-baseURL = '/slm/webservice/v2.0/'
+class CreateFeatureTest:
 
-logger = logging.getLogger(__name__)
-logger.debug("In Create Feature")
+    baseURL = '/slm/webservice/v2.0/'
 
-userAndPass = b64encode(b"%s:%s")%("username", "password")
+    def __init__(self, userAndPass):
 
-conn = httplib.HTTPSConnection("rally1.rallydev.com","443",context=ssl._create_unverified_context())
-headers = {'Authorization' : 'Basic %s' % userAndPass}
+        self.userAndPass = userAndPass
 
-curURL = baseURL + '/portfolioitem/epic?fetch=FormattedID$query=(FormattedID%20%3D%20E4261)'
+    def begTest(self):
 
-conn.request('GET', curURL, "", headers)
+        conn = httplib.HTTPSConnection("rally1.rallydev.com","443",context=ssl._create_unverified_context())
+        headers = {'Authorization' : 'Basic %s' % self.userAndPass}
 
-epicQResp = conn.getresponse()
+        curURL = CreateFeatureTest.baseURL + '/portfolioitem/epic?fetch=FormattedID$query=(FormattedID%20%3D%20E4261)'
 
-epicQJson = json.loads(epicQResp.read())
+        conn.request('GET', curURL, "", headers)
 
-print("****Epic Query****\n")
-print(epicQJson)
-print("\n\n")
+        epicQResp = conn.getresponse()
 
-epicRef = epicQJson.get('QueryResult').get('Result')[0].get('_ref')
+        epicQJson = json.loads(epicQResp.read())
 
-curURL = baseURL + '/security/authorize'
+        print("****Epic Query****\n")
+        print(epicQJson)
+        print("\n\n")
 
-conn.request('GET', curURL, "", headers)
+        epicRef = epicQJson.get('QueryResult').get('Result')[0].get('_ref')
 
-secResp = conn.getresponse()
+        curURL = CreateFeatureTest.baseURL + '/security/authorize'
 
-secJson = json.loads(secResp.read())
+        conn.request('GET', curURL, "", headers)
 
-print("****Security Authorization****\n")
-print(secJson)
-print("\n\n")
+        secResp = conn.getresponse()
 
-TOK = secResp.get('OperationResult').get('SecurityToken')
+        secJson = json.loads(secResp.read())
 
-headers = {'Authorization' : 'Basic %s', 'ZSESSIONID' : '%s' %(userAndPass, "API Key")}
+        print("****Security Authorization****\n")
+        print(secJson)
+        print("\n\n")
 
-data = """{"Feature":{"Name":"%s","PortfolioItem":"%s"}}"""%("Sanity Test",epicRef)
+        TOK = secResp.get('OperationResult').get('SecurityToken')
 
-info = json.loads(data)
+        headers = {'Authorization' : 'Basic %s', 'ZSESSIONID' : '%s' %(self.userAndPass, "API Key")}
 
-curUrl = baseURL + 'feature/create?key=' + TOK
+        data = """{"Feature":{"Name":"%s","PortfolioItem":"%s"}}"""%("Sanity Test",epicRef)
 
-conn.request('PUT', curURL, json.dumps(info, indent=4), headers=headers)
+        info = json.loads(data)
 
-fresp = conn.getresponse()
+        curUrl = CreateFeatureTest.baseURL + 'feature/create?key=' + TOK
 
-print("****Feature Creation****\n")
-print(fresp.read())
-print("\n\n")
+        conn.request('PUT', curURL, json.dumps(info, indent=4), headers=headers)
+
+        fresp = conn.getresponse()
+
+        print("****Feature Creation****\n")
+        print(fresp.read())
+        print("\n\n")
+        
+        return ""

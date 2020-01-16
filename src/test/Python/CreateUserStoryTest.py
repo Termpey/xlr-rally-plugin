@@ -8,59 +8,64 @@
 # THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #
 
-import logging, ssl, httplib, urllib, json
-from base64 import b64encode
+import ssl, httplib, urllib, json
 
-baseURL = '/slm/webservice/v2.0/'
+class CreateUserStoryTest:
 
-logger = logging.getLogger(__name__)
-logger.debug("In Create User Story")
+    baseURL = '/slm/webservice/v2.0/'
 
-userAndPass = b64encode(b"%s:%s")%("username", "password")
+    def __init__(self, userAndPass):
 
-conn = httplib.HTTPSConnection("rally1.rallydev.com","443",context=ssl._create_unverified_context())
-headers = {'Authorization' : 'Basic %s' % userAndPass}
+        self.userAndPass = userAndPass
 
-curURL = baseURL + 'portfolioitem/feature?fetch=FormattedID&query=(FormattedID%20%3D%20F20420)'
 
-conn.request('GET', curURL, "", headers)
+    def begTest(self):
 
-fQResp = conn.getresponse()
+        conn = httplib.HTTPSConnection("rally1.rallydev.com","443",context=ssl._create_unverified_context())
+        headers = {'Authorization' : 'Basic %s' % self.userAndPass}
 
-fQJson = json.loads(fQResp.read())
+        curURL = CreateUserStoryTest.baseURL + 'portfolioitem/feature?fetch=FormattedID&query=(FormattedID%20%3D%20F20420)'
 
-print("****Feature Query****\n")
-print(fQJson)
-print("\n\n")
+        conn.request('GET', curURL, "", headers)
 
-fRef = fQJson.get('QueryResult').get('Results')[0].get('_ref')
+        fQResp = conn.getresponse()
 
-curURL = baseURL + 'security/authorize'
+        fQJson = json.loads(fQResp.read())
 
-conn.request('GET', curURL, "", headers)
+        print("****Feature Query****\n")
+        print(fQJson)
+        print("\n\n")
 
-secResp = conn.getresponse()
+        fRef = fQJson.get('QueryResult').get('Results')[0].get('_ref')
 
-secJson = json.loads(secResp.read())
+        curURL = CreateUserStoryTest.baseURL + 'security/authorize'
 
-print("****Security Authorization****\n")
-print(secJson)
-print("\n\n")
+        conn.request('GET', curURL, "", headers)
 
-TOK = secResp.get('OperationResult').get('SecurityToken')
+        secResp = conn.getresponse()
 
-headers = {'Authorization' : 'Basic %s', 'ZSESSIONID' : '%s' %(userAndPass, configuration.apiKey)}
+        secJson = json.loads(secResp.read())
 
-data = """{"HierarchicalRequirement":{"Name": "%s", "PortfolioItem": "/portfolioitem/feature/%s"}}"""%(name,fRef)
+        print("****Security Authorization****\n")
+        print(secJson)
+        print("\n\n")
 
-info = json.loads(data)
+        TOK = secResp.get('OperationResult').get('SecurityToken')
 
-curURL = 'hierarchicalrequirement/create?key=%s'%TOK
+        headers = {'Authorization' : 'Basic %s', 'ZSESSIONID' : '%s' %(self.userAndPass, "API KEY")}
 
-conn.request('PUT', curURL, json.dumps(info, indent=4), headers)
+        data = """{"HierarchicalRequirement":{"Name": "%s", "PortfolioItem": "/portfolioitem/feature/%s"}}"""%(name,fRef)
 
-usCResp = conn.getresponse()
+        info = json.loads(data)
 
-print("****User Story Creation****\n")
-print(usCResp.read())
-print("\n\n")
+        curURL = 'hierarchicalrequirement/create?key=%s'%TOK
+
+        conn.request('PUT', curURL, json.dumps(info, indent=4), headers)
+
+        usCResp = conn.getresponse()
+
+        print("****User Story Creation****\n")
+        print(usCResp.read())
+        print("\n\n")
+
+        return ""
