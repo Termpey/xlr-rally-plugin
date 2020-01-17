@@ -50,7 +50,6 @@
         <property name="state" category="input" kind="enum" required="false">
             <enum-values>
 
-                <value>-- No Entry --</value>
                 <value>Inception</value>
                 <value>Construction</value>
                 <value>Transition</value>
@@ -88,15 +87,15 @@
         <property name="endDate" category="input" kind="string" required="true" label="Planned End Date" 
             description="Format: YYYY-MM-DD"/>
 
-            <property name="state" category="input" kind="enum" required="true">
+        <property name="state" category="input" kind="enum" required="true">
             <enum-values>
 
-                <value>-- No Entry --</value>
-                <value>Inception</value>
-                <value>Construction</value>
-                <value>Transition</value>
-                <value>Done</value>
-                <value>On Hold</value>
+                <value>Idea</value>
+                <value>Defined</value>
+                <value>In-Progress</value>
+                <value>Completed</value>
+                <value>Accepted</value>
+                <value>Released</value>
 
             </enum-values>
 
@@ -120,8 +119,24 @@
         <property name="formattedID" category="input" kind="string" required="true" label="Formatted ID"
             description="Give the Formatted ID of the User story or Feature to be updated. Include the prefix letters."/>
 
-        <property name="state" category="input" kind="string" required="false" label="State"
-            description="Input: On Hold, Done, Transition, Construction, or Inception"/>
+        <property name="state" category="input" kind="enum" required="false" label="State"
+            description="State of Feature or Schedule State of User Story">
+            <enum-values>
+                <value>Inception</value>
+                <value>Construction</value>
+                <value>Transition</value>
+                <value>Done</value>
+                <value>On Hold</value>
+                
+                <value>Idea</value>
+                <value>Defined</value>
+                <value>In-Progress</value>
+                <value>Completed</value>
+                <value>Accepted</value>
+                <value>Released</value>
+            </enum-values>
+
+        </property>
 
         <property name="notes" category="input" kind="string" required="false" label="Notes"
             description="Adds given notes to the end of the existing notes"/>

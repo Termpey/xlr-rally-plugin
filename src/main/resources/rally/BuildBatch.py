@@ -1,19 +1,23 @@
 
 class BuildBatch:
-    
-    funcDictionary = {"\"Description\":": "\"\"", "\"Notes\":": "\"\"", "\"c_AcceptanceCriteria\":":"\"\"","\"PlannedStartDate\":": "\"\""}
 
-    def __init__(self, path):
+    def __init__(self, path, values):
         self.batch = """{"Batch":[{"Entry":{ "Path": """ + path
         self.type = "\"feature\": {" if "feature" in path else "\"hierarchicalrequirement\": {"
+        self.values = values
+        self.specialObjects = []
 
     def buildJson(self):
 
         self.batch += ", \"Method\": \"POST\", \"Body\": { " + self.type
 
-        for i in BuildBatch.funcDictionary:
-            
-            self.batch += i + BuildBatch.funcDictionary.get(i) + ","
+        for i in self.values:
+
+            if '{' in i or '[' in i:
+                closure = '}' if '{' in i else ']' 
+                self.specialObjects.append(i + closure + ',')
+            else:
+                self.batch += i + ","
 
         batchCap = ""
         
@@ -23,15 +27,12 @@ class BuildBatch:
                 batchCap = "}" + batchCap
             elif c =="[":
                 batchCap = "]"+ batchCap
+        
+        for o in self.specialObjects:
+            self.batch += o
 
         self.batch = self.batch[:-1]
 
         print self.batch + batchCap
 
-        return ""
-
-test = BuildBatch("\"/hierarchicalrequirement/\"")
-
-test.buildJson()
-
-        
+        return ""        
