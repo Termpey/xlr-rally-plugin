@@ -10,6 +10,8 @@
 
 import logging
 import os
+from bin.main.rally.BuildBatch import BuildBatch
+
 
 LOG_FILENAME = 'log/rally_plugin.log'
 

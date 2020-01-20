@@ -10,6 +10,7 @@
 
 import logging, ssl, httplib, urllib, json
 from base64 import b64encode
+from bin.main.rally.BuildBatch import BuildBatch
 
 logger = logging.getLogger(__name__)
 logger.debug("In Update Object")
@@ -90,6 +91,17 @@ for i in fields:
     else:
         logger.debug("Field " + i + " not supported")
 
+buildBatch = BuildBatch(objectRef, values)
+
+data = buildBatch.buildJson()
+
+headers = {'Authorization' : 'Basic %s', 'ZSESSIONID' : '%s' %(userAndPass, configuration.apiKey)}
+
+conn.request('POST', '/slm/webservice/v2.0/batch', data, headers)
+
+request = conn.getresponse()
+
+print request.read()
 
 def getValue(url, userAndPass):
 
