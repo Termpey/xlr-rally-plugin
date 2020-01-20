@@ -92,3 +92,27 @@ def searchMilestone(title, userAndPass):
         logger.debug("Passed Milestone Title either doesnt exist or renders multiple results")
 
         return ""
+
+def searchIteration(title, userAndPass):
+
+    conn = httplib.HTTPSConnection(configuration.url,"443",context=ssl._create_unverified_context())
+    headers = {'Authorization' : 'Basic %s' %userAndPass}
+
+    curURl = '/slm/webservice/v2.0/iteration?fetch=Name&query=((Project.Name%20%3D%20Tech)%20AND%20(Name%20contains%20\"%s\"))'%title
+
+    conn.request('GET', curURL, "", headers)
+
+    request = conn.getresponse()
+
+    responseJson = json.loads(request.read())
+
+    if responseJson.get('QueryResult').get('TotalResultCount') == 0:
+
+        iterRef = responseJson.get('QueryResult').get('Results')[0].get('_ref')
+
+        return "\"Iteration\": \"%s\""%iterRef
+
+    else:
+        logger.debug("Iteration Year and sprint input either doesnt exist under Tech or there are several results")
+
+        return ""
