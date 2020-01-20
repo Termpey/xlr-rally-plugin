@@ -45,7 +45,7 @@ for i in fields:
         ref = searchIteration(fields[i])
 
     elif check == 'RELEASE':
-        ref = searchIteration(fields[i])
+        ref = searchRelease(fields[i])
     
     elif check == 'STATE' and not isFeature:
         ref = searchState(fields[i])
@@ -114,5 +114,27 @@ def searchIteration(title, userAndPass):
 
     else:
         logger.debug("Iteration Year and sprint input either doesnt exist under Tech or there are several results")
+
+        return ""
+
+def searchRelease(title, userAndPass):
+
+    conn = httplib.HTTPSConnection(configuration.url,"443",context=ssl._create_unverified_context())
+    headers = {'Authorization' : 'Basic %s' %userAndPass}
+
+    curURl = '/slm/webservice/v2.0/release?fetch=Name&query=((Project.Name%20%3D%20Tech)%20AND%20(Name%20contains%20\"%s\"))'%title
+
+    conn.request('GET', curURL, "", headers)
+
+    request = conn.getresponse()
+
+    responseJson = json.loads(request.read())
+
+    if responseJson.get('QueryResult').get('TotalResultCount') == 0:
+        releaseRef = responseJson.get('QueryResult').get('Results')[0].get('_ref')
+
+        return "\"Release\": \"%s\","%releaseRef
+    else:
+        logger.debug("Release Title returns either no or many results")
 
         return ""
