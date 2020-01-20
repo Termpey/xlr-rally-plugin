@@ -19,14 +19,7 @@ class BuildBatch:
             else:
                 self.batch += i + ","
 
-        batchCap = ""
-        
-        for c in self.batch:
-
-            if c == "{":
-                batchCap = "}" + batchCap
-            elif c =="[":
-                batchCap = "]"+ batchCap
+        batchCap = "}}}]}"
         
         for o in self.specialObjects:
             self.batch += o

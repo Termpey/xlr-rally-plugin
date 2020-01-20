@@ -119,54 +119,8 @@
         <property name="formattedID" category="input" kind="string" required="true" label="Formatted ID"
             description="Give the Formatted ID of the User story or Feature to be updated. Include the prefix letters."/>
 
-        <property name="state" category="input" kind="enum" required="false" label="State"
-            description="State of Feature or Schedule State of User Story">
-            <enum-values>
-                <value>Inception</value>
-                <value>Construction</value>
-                <value>Transition</value>
-                <value>Done</value>
-                <value>On Hold</value>
-                
-                <value>Idea</value>
-                <value>Defined</value>
-                <value>In-Progress</value>
-                <value>Completed</value>
-                <value>Accepted</value>
-                <value>Released</value>
-            </enum-values>
-
-        </property>
-
-        <property name="notes" category="input" kind="string" required="false" label="Notes"
-            description="Adds given notes to the end of the existing notes"/>
-
-        <property name="description" category="input" kind="string" required="false" label="Description"
-            description="Adds given description to the end of the existing description"/>
-
-        <property name="accCrit" category="input" kind="string" required="false" label="Acceptance Criteria"
-            description="Adds given acceptance criteria to the end of the existing acceptance criteria"/>
-
-        <property name="description" category="input" kind="string" required="false" label="Description"
-            description="Adds given description to the end of the existing description"/>
-
-        <property name="iteration" category="input" kind="string" required="false" label="Iteration"
-            description="Adds iteration by given title"/>
-
-        <property name="milestone" category="input" kind="string" required="false" label="Milestone"
-            description="Adds milestone by given title"/>
-
-        <property name="team" category="input" kind="string" required="false" label="Team/Project"
-            description="Updates to the given team by title"/>
-
-        <property name="owner" category="input" kind="string" required="false" label="Owner"
-            description="Updates to the given owner by name. Format: First Last"/>
-
-        <property name="startDate" category="input" kind="string" required="false" label="Start Date"
-            description="Updates to the given start date. Format: YYYY-MM-DD"/>
-
-        <property name="endDate" category="input" kind="string" required="false" label="End Date"
-            description="Updates to the given end date. Format: YYYY-MM-DD"/>
+        <property name="fields" category="input" kind="map_string_string" required="true"
+            description="Key: Field to be Populated. Value: The title of the object. Example: Milestone 2020 Sat 10/3"/>
 
     <type/>
 
