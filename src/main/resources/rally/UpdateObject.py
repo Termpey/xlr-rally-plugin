@@ -36,4 +36,59 @@ reqJson = json.loads(request.read())
 objectRef = reqJson.get('QueryResult').get('Results')[0].get('_ref')
 
 for i in fields:
+    check = i.upper()
+
+    if check == 'MILESTONE':
+        ref = searchMilestone(fields[i])
+
+    elif check == 'ITERATION'
+        ref = searchIteration(fields[i])
+
+    elif check == 'RELEASE':
+        ref = searchIteration(fields[i])
     
+    elif check == 'STATE' and not isFeature:
+        ref = searchState(fields[i])
+
+    elif check == 'DESCRIPTION':
+
+        values.append("\"Description\": \"%s\","%fields[i])
+
+    elif check == 'NOTES':
+
+        values.append("\"Notes\": \"%s\","%fields[i])
+
+    elif check == 'ACCEPTANCE CRITERIA':
+
+        values.append("\"c_AcceptanceCriteria\": \"%s\","%fields[i])
+
+    elif check == 'STATE':
+
+        values.append("\"State\": \"%s\","%fields[i])
+
+    else:
+
+
+def searchMilestone(title, userAndPass):
+
+    conn = httplib.HTTPSConnection(configuration.url,"443",context=ssl._create_unverified_context())
+    headers = {'Authorization' : 'Basic %s' %userAndPass}
+
+    curURL = '/slm/webservice/v2.0/milestone?fetch=name&query=(Name%20%3D%20\"%s\")'%title
+
+    conn.request('GET', curURL, "", headers)
+
+    request = conn.getresponse()
+
+    responseJson = json.loads(request.read())
+
+    if responseJson.get('QueryResult').get('TotalResultCount') == 1:
+        
+        milRef = responseJson.get('QueryResult').get('Results')[0].get('_ref')
+
+        return "\"Milestones\" : { \"Milestone\": \"%s\""%milRef
+    
+    else:
+        logger.debug("Passed Milestone Title either doesnt exist or renders multiple results")
+
+        return ""
