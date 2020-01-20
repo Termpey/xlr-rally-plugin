@@ -119,6 +119,8 @@
         <property name="formattedID" category="input" kind="string" required="true" label="Formatted ID"
             description="Give the Formatted ID of the User story or Feature to be updated. Include the prefix letters."/>
 
+        <property name="team" category="input" kind="string" required="true" label="Team"/>
+
         <property name="fields" category="input" kind="map_string_string" required="true"
             description="Key: Field to be Populated. Value: The title of the object. Example: Milestone 2020 Sat 10/3"/>
 

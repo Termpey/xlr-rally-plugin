@@ -37,18 +37,39 @@ objectRef = reqJson.get('QueryResult').get('Results')[0].get('_ref')
 
 for i in fields:
     check = i.upper()
+    searchMe = fields[i].replace(" ", "%20")
 
     if check == 'MILESTONE':
-        ref = searchMilestone(fields[i])
+        url = '/slm/webservice/v2.0/milestone?fetch=name&query=(Name%20%3D%20\"%s\")'%searchMe
+        ref = getValue(url, userAndPass)
+
+        value = "\"Milestones\" : { \"Milestone\": \"%s\""%ref
+
+        values.append(value)
 
     elif check == 'ITERATION'
-        ref = searchIteration(fields[i])
+        url = '/slm/webservice/v2.0/iteration?fetch=Name&query=((Project.Name%20%3D%20Tech)%20AND%20(Name%20contains%20\"%s\"))'%searchMe
+        ref = getValue(url, userAndPass)
+
+        value = "\"Iteration\": \"%s\""%ref
+
+        values.append(value)
 
     elif check == 'RELEASE':
-        ref = searchRelease(fields[i])
+        url = '/slm/webservice/v2.0/release?fetch=Name&query=((Project.Name%20%3D%20Tech)%20AND%20(Name%20contains%20\"%s\"))'%searchMe
+        ref = getValue(url, userAndPass)
+
+        value = "\"Release\": \"%s\","%ref
+
+        values.append(value)
     
     elif check == 'STATE' and not isFeature:
-        ref = searchState(fields[i])
+        url = '/slm/webservice/v2.0/flowstate?fetch=Name&query=((Name%20%3D%20\"%s\")%20AND%20(Project.Name%20%3D%20\"%s\"))'%(searchMe, team.replace(" ", "%20"))
+        ref = getValue(url, userAndPass)
+
+        value = "\"FlowState\":{\"_ref\": \"%s\""%ref
+
+        values.append(value)
 
     elif check == 'DESCRIPTION':
 
@@ -67,74 +88,25 @@ for i in fields:
         values.append("\"State\": \"%s\","%fields[i])
 
     else:
+        logger.debug("Field " + i + " not supported")
 
 
-def searchMilestone(title, userAndPass):
-
-    conn = httplib.HTTPSConnection(configuration.url,"443",context=ssl._create_unverified_context())
-    headers = {'Authorization' : 'Basic %s' %userAndPass}
-
-    curURL = '/slm/webservice/v2.0/milestone?fetch=name&query=(Name%20%3D%20\"%s\")'%title
-
-    conn.request('GET', curURL, "", headers)
-
-    request = conn.getresponse()
-
-    responseJson = json.loads(request.read())
-
-    if responseJson.get('QueryResult').get('TotalResultCount') == 1:
-        
-        milRef = responseJson.get('QueryResult').get('Results')[0].get('_ref')
-
-        return "\"Milestones\" : { \"Milestone\": \"%s\""%milRef
-    
-    else:
-        logger.debug("Passed Milestone Title either doesnt exist or renders multiple results")
-
-        return ""
-
-def searchIteration(title, userAndPass):
+def getValue(url, userAndPass):
 
     conn = httplib.HTTPSConnection(configuration.url,"443",context=ssl._create_unverified_context())
     headers = {'Authorization' : 'Basic %s' %userAndPass}
 
-    curURl = '/slm/webservice/v2.0/iteration?fetch=Name&query=((Project.Name%20%3D%20Tech)%20AND%20(Name%20contains%20\"%s\"))'%title
-
-    conn.request('GET', curURL, "", headers)
+    conn.request('GET', url, "", headers)
 
     request = conn.getresponse()
 
     responseJson = json.loads(request.read())
 
     if responseJson.get('QueryResult').get('TotalResultCount') == 0:
+        ref = responseJson.get('QueryResult').get('Results')[0].get('_ref')
 
-        iterRef = responseJson.get('QueryResult').get('Results')[0].get('_ref')
-
-        return "\"Iteration\": \"%s\""%iterRef
-
+        return ref
     else:
-        logger.debug("Iteration Year and sprint input either doesnt exist under Tech or there are several results")
-
-        return ""
-
-def searchRelease(title, userAndPass):
-
-    conn = httplib.HTTPSConnection(configuration.url,"443",context=ssl._create_unverified_context())
-    headers = {'Authorization' : 'Basic %s' %userAndPass}
-
-    curURl = '/slm/webservice/v2.0/release?fetch=Name&query=((Project.Name%20%3D%20Tech)%20AND%20(Name%20contains%20\"%s\"))'%title
-
-    conn.request('GET', curURL, "", headers)
-
-    request = conn.getresponse()
-
-    responseJson = json.loads(request.read())
-
-    if responseJson.get('QueryResult').get('TotalResultCount') == 0:
-        releaseRef = responseJson.get('QueryResult').get('Results')[0].get('_ref')
-
-        return "\"Release\": \"%s\","%releaseRef
-    else:
-        logger.debug("Release Title returns either no or many results")
+        logger.debug("Query of " + url + " resulted in 0 or multiple results")
 
         return ""
