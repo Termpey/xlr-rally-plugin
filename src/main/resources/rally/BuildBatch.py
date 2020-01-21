@@ -1,31 +1,27 @@
 
 class BuildBatch:
 
-    def __init__(self, path, values):
-        self.batch = """{"Batch":[{"Entry":{ "Path": """ + path
-        self.type = "\"feature\": {" if "feature" in path else "\"hierarchicalrequirement\": {"
-        self.values = values
-        self.specialObjects = []
+    def __init__(self, path):
+        objType = "\"feature\": {" if "feature" in path else "\"hierarchicalrequirement\": {"
+        self.batch = """{"Batch":[{"Entry":{ "Path": """ + path + ", \"Method\": \"POST\", \"Body\": { " + objType
+        self.batchCap = "}}}]}"
 
-    def buildJson(self):
+    def buildJson(self, values):
 
-        self.batch += ", \"Method\": \"POST\", \"Body\": { " + self.type
+        retStr = self.batch
+        specialObjects = []
 
-        for i in self.values:
+        for i in values:
 
             if '{' in i or '[' in i:
                 closure = '}' if '{' in i else ']' 
-                self.specialObjects.append(i + closure + ',')
+                specialObjects.append(i + closure + ',')
             else:
-                self.batch += i + ","
+                retStr += i + ","
 
-        batchCap = "}}}]}"
-        
-        for o in self.specialObjects:
-            self.batch += o
+        for o in specialObjects:
+            retStr += o
 
-        self.batch = self.batch[:-1]
+        retStr = retStr[:-1] + self.batchCap
 
-        print self.batch + batchCap
-
-        return ""        
+        return retStr 

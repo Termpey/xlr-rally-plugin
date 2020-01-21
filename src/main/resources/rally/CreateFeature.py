@@ -13,6 +13,8 @@ from base64 import b64encode
 
 baseURL = '/slm/webservice/v2.0/'
 
+values = []
+
 logger = logging.getLogger(__name__)
 logger.debug("In Create Feature")
 
@@ -30,6 +32,32 @@ epicQResp = conn.getresponse()
 epicQJson = json.loads(epicQResp.read())
 
 epicRef = epicQJson.get('QueryResult').get('Result')[0].get('_ref')
+
+val = "\"Name\": \"%s\""%title
+values.append(val)
+
+val = "\"PortfolioItem\": \"%s\""%epicRef
+values.append(val)
+
+val = "\"PlannedStartDate\": \"%s\""%startDate
+values.append(val)
+
+val = "\"PlannedEndDate\": \"%s\""%endDate
+values.append(val)
+
+val = "\"Description\": \"%s\""%desc
+values.append(val)
+
+val = "\"c_AcceptanceCriteria\": \"%s\""%accCriteria
+values.append(val)
+
+val = "\"State\": \"%s\""%state
+values.append(val)
+
+curURL = baseURL + 'user?fetch=DisplayName&query=(DisplayName%20%3D%20' + owner + ')'
+ownRef = getValue(curURL, userAndPass)
+val = "\"Owner\": \"%s\""%ownRef
+values.append(val)
 
 curURL = baseURL + '/security/authorize'
 
@@ -54,3 +82,23 @@ conn.request('PUT', curURL, json.dumps(info, indent=4), headers=headers)
 fresp = conn.getresponse()
 
 print(fresp.read())
+
+def getValue(url, userAndPass):
+
+    conn = httplib.HTTPSConnection(configuration.url,"443",context=ssl._create_unverified_context())
+    headers = {'Authorization' : 'Basic %s' %userAndPass}
+
+    conn.request('GET', url, "", headers)
+
+    request = conn.getresponse()
+
+    responseJson = json.loads(request.read())
+
+    if responseJson.get('QueryResult').get('TotalResultCount') == 0:
+        ref = responseJson.get('QueryResult').get('Results')[0].get('_ref')
+
+        return ref
+    else:
+        logger.debug("Query of " + url + " resulted in 0 or multiple results")
+
+        return ""

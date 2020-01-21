@@ -41,10 +41,10 @@ for i in fields:
     searchMe = fields[i].replace(" ", "%20")
 
     if check == 'MILESTONE':
-        url = '/slm/webservice/v2.0/milestone?fetch=name&query=(Name%20%3D%20\"%s\")'%searchMe
+        url = '/slm/webservice/v2.0/milestone?fetch=Name&query=(Name%20%3D%20\"%s\")'%searchMe
         ref = getValue(url, userAndPass)
 
-        value = "\"Milestones\" : { \"Milestone\": \"%s\""%ref
+        value = "\"Milestones\" : { \"Milestone\": \"%s\""%ref if ref != "" else ""
 
         values.append(value)
 
@@ -52,7 +52,7 @@ for i in fields:
         url = '/slm/webservice/v2.0/iteration?fetch=Name&query=((Project.Name%20%3D%20Tech)%20AND%20(Name%20contains%20\"%s\"))'%searchMe
         ref = getValue(url, userAndPass)
 
-        value = "\"Iteration\": \"%s\""%ref
+        value = "\"Iteration\": \"%s\""%ref if ref != "" else ""
 
         values.append(value)
 
@@ -60,7 +60,7 @@ for i in fields:
         url = '/slm/webservice/v2.0/release?fetch=Name&query=((Project.Name%20%3D%20Tech)%20AND%20(Name%20contains%20\"%s\"))'%searchMe
         ref = getValue(url, userAndPass)
 
-        value = "\"Release\": \"%s\","%ref
+        value = "\"Release\": \"%s\","%ref if ref != "" else ""
 
         values.append(value)
     
@@ -68,7 +68,7 @@ for i in fields:
         url = '/slm/webservice/v2.0/flowstate?fetch=Name&query=((Name%20%3D%20\"%s\")%20AND%20(Project.Name%20%3D%20\"%s\"))'%(searchMe, team.replace(" ", "%20"))
         ref = getValue(url, userAndPass)
 
-        value = "\"FlowState\":{\"_ref\": \"%s\""%ref
+        value = "\"FlowState\":{\"_ref\": \"%s\""%ref if ref != "" else ""
 
         values.append(value)
 
@@ -91,9 +91,9 @@ for i in fields:
     else:
         logger.debug("Field " + i + " not supported")
 
-buildBatch = BuildBatch(objectRef, values)
+buildBatch = BuildBatch(objectRef)
 
-data = buildBatch.buildJson()
+data = buildBatch.buildJson(values)
 
 headers = {'Authorization' : 'Basic %s', 'ZSESSIONID' : '%s' %(userAndPass, configuration.apiKey)}
 

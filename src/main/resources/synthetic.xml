@@ -33,8 +33,6 @@
 
         <property name="scriptLocation" default="rally/CreateFeature.py" hidden="true"/>
 
-        <property name="scriptLocation" hidden="true" default="xlr/CreateFeature.java"/>
-
         <property name="epicID" category="input" kind="string" required="true" label="Epic ID"/>
 
         <property name="title" category="input" kind="string" required="true" label="Title of Feature"/>
@@ -47,7 +45,11 @@
         <property name="endDate" category="input" kind="string" required="true" label="Planned End Date" 
             description="Format: YYYY-MM-DD"/>
 
-        <property name="state" category="input" kind="enum" required="false">
+        <property name="desc" category="input" kind="string" required="true" label="Description"/>
+
+        <property name="accCriteria" category="input" kind="string" required="true" label="Acceptance Criteria"/>
+
+        <property name="state" category="input" kind="enum" default="Inception" required="false">
             <enum-values>
 
                 <value>Inception</value>
@@ -60,11 +62,11 @@
 
         </property>
 
-        <property name="desc" category="input" kind="string" required="false" label="Description"/>
+        <property name="notes" category="input" kind="string" default="" required="false" default="" label="Notes"/>
 
-        <property name="notes" category="input" kind="string" required="false" label="Notes"/>
+        <property name="milestone" category="input" kind="string" default="" required="false" label="Milestone" description="The name of the Milestone as it appears in Rally"/>
 
-        <property name="accCriteria" category="input" kind="string" required="false" label="Acceptance Criteria"/>
+        <property name="iteration" category="input" kind="string" default="" required="false" label="Iteration" description="The name of the Iteration as it appears in Rally"/>
 
         <property name="createdID" category="output" kind="string" label="Feature ID" 
             description="ID number of the newly created feature"/>
@@ -81,13 +83,19 @@
 
         <property name="owner" category="input" kind="string" required="true" label="Owner Format: First Last"/>
 
+        <property name="team" category="input" kind="string" required="true" label="Team"/>
+
         <property name="startDate" category="input" kind="string" required="true" label="Planned Start Date" 
             description="Format: YYYY-MM-DD"/>
 
         <property name="endDate" category="input" kind="string" required="true" label="Planned End Date" 
             description="Format: YYYY-MM-DD"/>
 
-        <property name="state" category="input" kind="enum" required="true">
+        <property name="accCriteria" category="input" kind="string" required="true" label="Acceptance Criteria"/>
+
+        <property name="desc" category="input" kind="string" required="true" label="Description"/>
+
+        <property name="state" category="input" kind="enum" default="Idea" required="false">
             <enum-values>
 
                 <value>Idea</value>
@@ -101,11 +109,13 @@
 
         </property>
 
-        <property name="desc" category="input" kind="string" required="false" label="Description"/>
+        <property name="notes" category="input" kind="string" default="" required="false" label="Notes"/>
 
-        <property name="notes" category="input" kind="string" required="false" label="Notes"/>
+        <property name="milestone" category="input" kind="string" default="" required="false" label="Milestone" description="Milesotne name as it appears in Rally"/>
 
-        <property name="accCriteria" category="input" kind="string" required="false" label="Acceptance Criteria"/>
+        <property name="iteration" category="input" kind="string" default="" required="false" label="Iteration" description="Iteration name as it appears in Rally"/>
+
+        <property name="release" category="input" kind="string" default="" required="false" label="Release" description="Release name as it appears in Rally"/>
 
         <property name="createdID" category="output" kind="string" label="User Story ID" 
             description="ID number of the newly created User Story"/>
