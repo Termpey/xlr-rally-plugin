@@ -26,7 +26,7 @@ values = []
 conn = httplib.HTTPSConnection(configuration.url,"443",context=ssl._create_unverified_context())
 headers = {'Authorization' : 'Basic %s' %userAndPass}
 
-curURL =  baseURL + '/portfolioitem/feature?fetch=FormattedID&query=(FormattedID%20%3D%20%s)'%formattedID if isFeature else baseURL + 'hierarchicalrequirement?fetch=FormattedID&query=(FromattedID%20%3D%20%s)'%formattedID
+curURL =  baseURL + '/portfolioitem/feature?fetch=FormattedID&query=(FormattedID%20%3D%20' + formattedID + ')' if isFeature else baseURL + 'hierarchicalrequirement?fetch=FormattedID&query=(FromattedID%20%3D%20' + formattedID + ')'
 
 conn.request('GET', curURL, "", headers)
 
@@ -41,7 +41,7 @@ for i in fields:
     searchMe = fields[i].replace(" ", "%20")
 
     if check == 'MILESTONE':
-        url = '/slm/webservice/v2.0/milestone?fetch=Name&query=(Name%20%3D%20\"%s\")'%searchMe
+        url = '/slm/webservice/v2.0/milestone?fetch=Name&query=(Name%20%3D%20\"' + searchMe + '\")'
         ref = getValue(url, userAndPass)
 
         value = "\"Milestones\" : { \"Milestone\": \"%s\""%ref if ref != "" else ""
@@ -49,7 +49,7 @@ for i in fields:
         values.append(value)
 
     elif check == 'ITERATION'
-        url = '/slm/webservice/v2.0/iteration?fetch=Name&query=((Project.Name%20%3D%20Tech)%20AND%20(Name%20contains%20\"%s\"))'%searchMe
+        url = '/slm/webservice/v2.0/iteration?fetch=Name&query=((Project.Name%20%3D%20Tech)%20AND%20(Name%20contains%20\"' + searchMe + '\")'
         ref = getValue(url, userAndPass)
 
         value = "\"Iteration\": \"%s\""%ref if ref != "" else ""
@@ -57,7 +57,7 @@ for i in fields:
         values.append(value)
 
     elif check == 'RELEASE':
-        url = '/slm/webservice/v2.0/release?fetch=Name&query=((Project.Name%20%3D%20Tech)%20AND%20(Name%20contains%20\"%s\"))'%searchMe
+        url = '/slm/webservice/v2.0/release?fetch=Name&query=((Project.Name%20%3D%20Tech)%20AND%20(Name%20contains%20\"' + searchMe + '\")'
         ref = getValue(url, userAndPass)
 
         value = "\"Release\": \"%s\","%ref if ref != "" else ""
@@ -65,7 +65,7 @@ for i in fields:
         values.append(value)
     
     elif check == 'STATE' and not isFeature:
-        url = '/slm/webservice/v2.0/flowstate?fetch=Name&query=((Name%20%3D%20\"%s\")%20AND%20(Project.Name%20%3D%20\"%s\"))'%(searchMe, team.replace(" ", "%20"))
+        url = '/slm/webservice/v2.0/flowstate?fetch=Name&query=((Name%20%3D%20\"' + team.replace(" ", "%20")) + '\")%20AND%20(Project.Name%20%3D%20\"' + searchMe + '\")' 
         ref = getValue(url, userAndPass)
 
         value = "\"FlowState\":{\"_ref\": \"%s\""%ref if ref != "" else ""
