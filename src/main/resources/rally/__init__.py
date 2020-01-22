@@ -12,7 +12,7 @@ import logging
 import os
 from bin.main.rally.BuildBatch import BuildBatch
 from bin.main.rally.BuildCreate import BuildCreate
-from bin.main.rally.FetchReference import FetchReference
+from main.resources.rally.FetchReference import FetchReference
 
 
 LOG_FILENAME = 'log/rally_plugin.log'

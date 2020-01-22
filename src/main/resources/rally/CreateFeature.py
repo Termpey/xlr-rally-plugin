@@ -10,7 +10,7 @@
 
 import logging, ssl, httplib, urllib, json
 from bin.main.rally.BuildCreate import BuildCreate
-from bin.main.rally.FetchReference import FetchReference
+from main.resources.rally.FetchReference import FetchReference
 from base64 import b64encode
 
 baseURL = '/slm/webservice/v2.0/'

@@ -11,7 +11,7 @@
 import logging, ssl, httplib, urllib, json
 from base64 import b64encode
 from bin.main.rally.BuildBatch import BuildBatch
-from bin.main.rally.FetchReference import FetchReference
+from main.resources.rally.FetchReference import FetchReference
 
 logger = logging.getLogger(__name__)
 logger.debug("In Update Object")
