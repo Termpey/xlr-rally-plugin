@@ -9,6 +9,7 @@
 #
 
 import logging, ssl, httplib, urllib, json
+from bin.main.rally.BuildCreate import BuildCreate
 from base64 import b64encode
 
 baseURL = '/slm/webservice/v2.0/'
@@ -54,10 +55,26 @@ values.append(val)
 val = "\"State\": \"%s\""%state
 values.append(val)
 
-curURL = baseURL + 'user?fetch=DisplayName&query=(DisplayName%20%3D%20' + owner + ')'
+curURL = baseURL + 'user?fetch=DisplayName&query=(DisplayName%20%3D%20\"' + owner.replace(" ","%20") + '\")'
 ownRef = getValue(curURL, userAndPass)
 val = "\"Owner\": \"%s\""%ownRef
 values.append(val)
+
+if notes != "":
+    val = "\"Notes\": \"%s\""
+    values.append(val)
+
+if milestone != "":
+    curURL = baseURL + 'milesont?fetch=Name&query=(Name%20%3D%20\"' + milestone.replace(" ","%20")+ '\")'
+    milRef = getValue(curURL, userAndPass)
+    val = "\"Milestones\":{ \"Milestone\": \"%s\""%milRef
+    values.append(val)
+
+if iteration != "":
+    curUrl = baseURL + 'iteration?fetch=Name&query=((Project.Name%20%3D%20Tech)%20AND%20(Name%20%3D%20\"' + iteration.replace(" ", "%20") + '\"))'
+    iterRef = getValue(curURL, userAndPass)
+    val = "\"Iteration\": \"%s\""%iterRef
+    values.append(val)
 
 curURL = baseURL + '/security/authorize'
 
@@ -71,7 +88,9 @@ TOK = secResp.get('OperationResult').get('SecurityToken')
 
 headers = {'Authorization' : 'Basic %s', 'ZSESSIONID' : '%s' %(userAndPass, configuration.apiKey)}
 
-data = """{"Feature":{"Name":"%s","PortfolioItem":"%s"}}"""%(name,epicRef)
+jsonBuild = BuildCreate("feature")
+
+data = jsonBuild.buildCreate(values)
 
 info = json.loads(data)
 

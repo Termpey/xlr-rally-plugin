@@ -11,6 +11,7 @@
 import logging
 import os
 from bin.main.rally.BuildBatch import BuildBatch
+from bin.main.rally.BuildCreate import BuildCreate
 
 
 LOG_FILENAME = 'log/rally_plugin.log'

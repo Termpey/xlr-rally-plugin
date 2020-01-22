@@ -9,9 +9,11 @@
 #
 
 import logging, ssl, httplib, urllib, json
+from bin.main.rally.BuildCreate import BuildCreate
 from base64 import b64encode
 
 baseURL = '/slm/webservice/v2.0/'
+values = []
 
 logger = logging.getLogger(__name__)
 logger.debug("In Create User Story")
@@ -21,7 +23,7 @@ userAndPass = b64encode(b"%s:%s")%(configuration.userName, configuration.passwor
 conn = httplib.HTTPSConnection(configuration.url,"443",context=ssl._create_unverified_context())
 headers = {'Authorization' : 'Basic %s' % userAndPass}
 
-curURL = baseURL + 'portfolioitem/feature?fetch=FormattedID&query=(FormattedID%20%3D%20%s)'%featureID
+curURL = baseURL + 'portfolioitem/feature?fetch=FormattedID&query=(FormattedID%20%3D%20' + %featureID + ')'
 
 conn.request('GET', curURL, "", headers)
 
@@ -32,6 +34,59 @@ fQJson = json.loads(fQResp.read())
 print(fQJson)
 
 fRef = fQJson.get('QueryResult').get('Results')[0].get('_ref')
+
+val = "\"Name\": \"%s\""%title
+values.append(val)
+
+val = "\"PortfolioItem\": \"/portfolioitem/feature/%s\""%fRef
+
+val = "\"PlannedStartDate\": \"%s\""%startDate
+values.append(val)
+
+val = "\"PlannedEndDate\": \"%s\""%endDate
+values.append(val)
+
+val = "\"Description\": \"%s\""%desc
+values.append(val)
+
+val = "\"c_AcceptanceCriteria\": \"%s\""%accCriteria
+values.append(val)
+
+curURL = baseURL + 'user?fetch=DisplayName&query(DisplayName%20%3D%20\"' + owner.replace(" ", "%20") + '\")'
+ownRef = getValue(curURL, userAndPass)
+val = "\"Owner\": \"%s\""%ownRef
+
+curURL = baseURL + 'project?fetch=Name&query=(Name%20%3D%20\"' + team.replace(" ", "%20") + '\")'
+teamRef = getValue(curURL, userAndPass)
+val = "\"Project\": \"%s\""%teamRef
+values.append(val)
+
+curURL = baseURL + 'flowstate?fetch=Name&query=((Project.Name%20%3D%20\"Tech\")%20AND%20(Name%20%3D%20\"' + state.replace(" ", "%20") + '\"))'
+stateRef = getValue(curURL, userAndPass)
+val = "\"FlowState\": {\"_ref\": \"%s\""%stateRef
+values.append(val)
+
+if notes != "":
+    val = "\"Notes\": \"%s\""
+    values.append(val)
+
+if milestone != "":
+    curURL = baseURL + 'milesont?fetch=Name&query=(Name%20%3D%20\"' + milestone.replace(" ","%20")+ '\")'
+    milRef = getValue(curURL, userAndPass)
+    val = "\"Milestones\":{ \"Milestone\": \"%s\""%milRef
+    values.append(val)
+
+if iteration != "":
+    curUrl = baseURL + 'iteration?fetch=Name&query=((Project.Name%20%3D%20Tech)%20AND%20(Name%20%3D%20\"' + iteration.replace(" ", "%20") + '\"))'
+    iterRef = getValue(curURL, userAndPass)
+    val = "\"Iteration\": \"%s\""%iterRef
+    values.append(val)
+
+if release != "":
+    curURL = baseURL + 'release?fetch=Name&query((Project.Name%20%3D%20Tech)%20AND%20(Name%20%3D%20\"' + release.replace(" ", "%20")'\"))'
+    releaseRef = getValue(curURL, userAndPass)
+    val = "\"Release\": \"%s\""%releaseRef
+    values.append(val)
 
 curURL = baseURL + 'security/authorize'
 
@@ -45,7 +100,9 @@ TOK = secResp.get('OperationResult').get('SecurityToken')
 
 headers = {'Authorization' : 'Basic %s', 'ZSESSIONID' : '%s' %(userAndPass, configuration.apiKey)}
 
-data = """{"HierarchicalRequirement":{"Name": "%s", "PortfolioItem": "/portfolioitem/feature/%s"}}"""%(name,fRef)
+buildJson = BuildCreate("HierarchicalRequirement")
+
+data = buildJson.buildCreate(values)
 
 info = json.loads(data)
 
@@ -56,3 +113,23 @@ conn.request('PUT', curURL, json.dumps(info, indent=4), headers)
 usCResp = conn.getresponse()
 
 print(usCResp.read())
+
+def getValue(url, userAndPass):
+
+    conn = httplib.HTTPSConnection(configuration.url,"443",context=ssl._create_unverified_context())
+    headers = {'Authorization' : 'Basic %s' %userAndPass}
+
+    conn.request('GET', url, "", headers)
+
+    request = conn.getresponse()
+
+    responseJson = json.loads(request.read())
+
+    if responseJson.get('QueryResult').get('TotalResultCount') == 0:
+        ref = responseJson.get('QueryResult').get('Results')[0].get('_ref')
+
+        return ref
+    else:
+        logger.debug("Query of " + url + " resulted in 0 or multiple results")
+
+        return ""
