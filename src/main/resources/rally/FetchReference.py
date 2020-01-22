@@ -7,24 +7,29 @@
 #
 # THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #
+import logging, ssl, httplib, urllib, json
 
-import logging
-import os
-from bin.main.rally.BuildBatch import BuildBatch
-from bin.main.rally.BuildCreate import BuildCreate
-from bin.main.rally.FetchReference import FetchReference
+class FetchReference:
 
+    def __init__(self, userAndPass, url):
+        self.userAndPass = userAndPass
+        self.url = url
 
-LOG_FILENAME = 'log/rally_plugin.log'
+    def getValue(self, query, values):
+        conn = httplib.HTTPSConnection(self.url,"443",context=ssl._create_unverified_context())
+        headers = {'Authorization' : 'Basic %s' %self.userAndPass}
 
-logger = logging.getLogger(__name__)
-logger.setLevel(logging.INFO)
-handler = logging.handlers.RotatingFileHandler(
-              LOG_FILENAME, maxBytes=1000000, backupCount=1)
-formatter = logging.Formatter('%(asctime)s %(name)s %(levelname)s %(message)s')
-handler.setFormatter(formatter)
-logger.addHandler(handler)
+        conn.request('GET', query, "", headers)
 
+        request = conn.getresponse()
 
-logger.debug('logger has been configured')
+        responseJson = json.loads(request.read())
 
+        if responseJson.get('QueryResult').get('TotalResultCount') == 0:
+            ref = responseJson.get('QueryResult').get('Results')[0].get('_ref')
+
+            return ref
+        else:
+            logger.debug("Query of " + url + " resulted in 0 or multiple results")
+
+            return ""

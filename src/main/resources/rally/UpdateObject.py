@@ -11,6 +11,7 @@
 import logging, ssl, httplib, urllib, json
 from base64 import b64encode
 from bin.main.rally.BuildBatch import BuildBatch
+from bin.main.rally.FetchReference import FetchReference
 
 logger = logging.getLogger(__name__)
 logger.debug("In Update Object")
@@ -22,6 +23,7 @@ isFeature = 'F' in formattedID
 userAndPass = b64encode(b"%s:%s")%(configuration.userName, configuration.password)
 
 values = []
+query = FetchReference(userAndPass, configuration.url)
 
 conn = httplib.HTTPSConnection(configuration.url,"443",context=ssl._create_unverified_context())
 headers = {'Authorization' : 'Basic %s' %userAndPass}
@@ -42,7 +44,7 @@ for i in fields:
 
     if check == 'MILESTONE':
         url = '/slm/webservice/v2.0/milestone?fetch=Name&query=(Name%20%3D%20\"' + searchMe + '\")'
-        ref = getValue(url, userAndPass)
+        ref = query.getValue(url, userAndPass)
 
         value = "\"Milestones\" : { \"Milestone\": \"%s\""%ref if ref != "" else ""
 
@@ -50,7 +52,7 @@ for i in fields:
 
     elif check == 'ITERATION'
         url = '/slm/webservice/v2.0/iteration?fetch=Name&query=((Project.Name%20%3D%20Tech)%20AND%20(Name%20contains%20\"' + searchMe + '\")'
-        ref = getValue(url, userAndPass)
+        ref = query.getValue(url, userAndPass)
 
         value = "\"Iteration\": \"%s\""%ref if ref != "" else ""
 
@@ -58,7 +60,7 @@ for i in fields:
 
     elif check == 'RELEASE':
         url = '/slm/webservice/v2.0/release?fetch=Name&query=((Project.Name%20%3D%20Tech)%20AND%20(Name%20contains%20\"' + searchMe + '\")'
-        ref = getValue(url, userAndPass)
+        ref = query.getValue(url, userAndPass)
 
         value = "\"Release\": \"%s\","%ref if ref != "" else ""
 
@@ -66,7 +68,7 @@ for i in fields:
     
     elif check == 'STATE' and not isFeature:
         url = '/slm/webservice/v2.0/flowstate?fetch=Name&query=((Name%20%3D%20\"' + team.replace(" ", "%20")) + '\")%20AND%20(Project.Name%20%3D%20\"' + searchMe + '\")' 
-        ref = getValue(url, userAndPass)
+        ref = query.getValue(url, userAndPass)
 
         value = "\"FlowState\":{\"_ref\": \"%s\""%ref if ref != "" else ""
 
@@ -102,23 +104,3 @@ conn.request('POST', '/slm/webservice/v2.0/batch', data, headers)
 request = conn.getresponse()
 
 print request.read()
-
-def getValue(url, userAndPass):
-
-    conn = httplib.HTTPSConnection(configuration.url,"443",context=ssl._create_unverified_context())
-    headers = {'Authorization' : 'Basic %s' %userAndPass}
-
-    conn.request('GET', url, "", headers)
-
-    request = conn.getresponse()
-
-    responseJson = json.loads(request.read())
-
-    if responseJson.get('QueryResult').get('TotalResultCount') == 0:
-        ref = responseJson.get('QueryResult').get('Results')[0].get('_ref')
-
-        return ref
-    else:
-        logger.debug("Query of " + url + " resulted in 0 or multiple results")
-
-        return ""
