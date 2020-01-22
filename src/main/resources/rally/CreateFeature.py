@@ -96,7 +96,7 @@ data = jsonBuild.buildCreate(values)
 
 info = json.loads(data)
 
-curUrl = baseURL + 'feature/create?key=' + TOK
+curUrl = baseURL + 'portfolioitem/feature/create?key=' + TOK
 
 conn.request('PUT', curURL, json.dumps(info, indent=4), headers=headers)
 
